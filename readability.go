@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
+	"io"
 	"math"
 	"os"
 	"strings"
@@ -60,27 +60,13 @@ func Grade(text string) string {
 }
 
 func main() {
-	if len(os.Args) > 1 && os.Args[1] == "-test" {
-		if !runTableTests() {
-			os.Exit(1)
-		}
-		return
+	text, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Could not read text:", err)
+		os.Exit(1)
 	}
 
-	fmt.Print("Text: ")
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Buffer(make([]byte, 4096), 1024*1024)
-
-	if !scanner.Scan() {
-		if err := scanner.Err(); err != nil {
-			fmt.Fprintln(os.Stderr, "Could not read text:", err)
-			os.Exit(1)
-		}
-		fmt.Println("Before Grade 1")
-		return
-	}
-
-	fmt.Println(Grade(scanner.Text()))
+	fmt.Println(Grade(string(text)))
 }
 
 func runTableTests() bool {
